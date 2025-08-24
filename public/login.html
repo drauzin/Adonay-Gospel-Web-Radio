@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Registro - Adonay Gospel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f4f8;
+    }
+
+    .auth-container {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #0056b3;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #0056b3;
+      color: #fff;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #003366;
+    }
+
+    .switch-auth {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 14px;
+    }
+
+    .switch-auth span {
+      color: #0056b3;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .error-msg {
+      color: red;
+      margin-bottom: 1rem;
+      text-align: center;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h2 id="form-title">Login</h2>
+    <div class="error-msg" id="error-msg"></div>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Senha" />
+    <button id="submit-btn">Entrar</button>
+    <div class="switch-auth">
+      <span id="switch-auth">Não tem conta? Registre-se</span>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabaseUrl = 'https://wbhrljyegtuxcrriaqis.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaHJsanllZ3R1eGNycmlhcWlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwMzU5NzYsImV4cCI6MjA3MDYxMTk3Nn0.V5v66K84usz0DFucKHW7NjptTtlEalCXaowNtsHAiYw'; // coloque sua anon key aqui
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submit-btn');
+    const formTitle = document.getElementById('form-title');
+    const switchAuth = document.getElementById('switch-auth');
+    const errorMsg = document.getElementById('error-msg');
+
+    let isLogin = true; // true = login, false = registro
+
+    const redirectDashboard = () => {
+      window.location.href = "/dashboard.html";
+    }
+
+    // Checa se já está logado
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) redirectDashboard();
+    });
+
+    submitBtn.addEventListener('click', async () => {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        errorMsg.textContent = "Preencha todos os campos!";
+        return;
+      }
+
+      errorMsg.textContent = "";
+
+      if (isLogin) {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          errorMsg.textContent = error.message;
+        } else {
+          redirectDashboard();
+        }
+      } else {
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+          errorMsg.textContent = error.message;
+        } else {
+          alert("Registro realizado! Verifique seu email para confirmar a conta.");
+          isLogin = true;
+          formTitle.textContent = "Login";
+          submitBtn.textContent = "Entrar";
+          switchAuth.textContent = "Não tem conta? Registre-se";
+        }
+      }
+    });
+
+    switchAuth.addEventListener('click', () => {
+      isLogin = !isLogin;
+      formTitle.textContent = isLogin ? "Login" : "Registro";
+      submitBtn.textContent = isLogin ? "Entrar" : "Registrar";
+      switchAuth.textContent = isLogin ? "Não tem conta? Registre-se" : "Já tem conta? Faça login";
+      errorMsg.textContent = "";
+      emailInput.value = "";
+      passwordInput.value = "";
+    });
+  </script>
+</body>
+</html>

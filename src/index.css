@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 251 100% 98%;
+    --foreground: 240 10% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 15%;
+
+    --primary: 266 85% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 266 85% 68%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 240 10% 15%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 240 6% 46%;
+
+    --accent: 317 100% 94%;
+    --accent-foreground: 240 10% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 266 85% 58%;
+
+    --radius: 1rem;
+
+    /* Gospel Theme Colors */
+    --gospel-primary: 266 85% 58%;
+    --gospel-secondary: 317 100% 94%;
+    --gospel-accent: 45 96% 89%;
+    --gospel-soft: 220 14% 96%;
+    --gospel-dove: 210 20% 98%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--gospel-primary)), hsl(var(--primary-glow)));
+    --gradient-soft: linear-gradient(180deg, hsl(var(--gospel-dove)), hsl(var(--gospel-soft)));
+    --gradient-hero: linear-gradient(135deg, hsl(266 85% 58% / 0.9), hsl(317 100% 94% / 0.8));
+
+    /* Shadows */
+    --shadow-soft: 0 10px 30px -10px hsl(var(--gospel-primary) / 0.15);
+    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.3);
+
+    /* Sidebar variables */
+    --sidebar-background: 251 100% 98%;
+    --sidebar-foreground: 240 10% 15%;
+    --sidebar-primary: 266 85% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 240 10% 15%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 266 85% 58%;
+  }
+
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 95%;
+
+    --card: 240 10% 4%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 240 10% 4%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 266 85% 68%;
+    --primary-foreground: 240 10% 4%;
+    --primary-glow: 266 85% 78%;
+
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 240 4% 16%;
+    --accent-foreground: 0 0% 95%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 95%;
+
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 266 85% 68%;
+
+    /* Dark theme gospel colors */
+    --gospel-primary: 266 85% 68%;
+    --gospel-secondary: 317 50% 24%;
+    --gospel-accent: 45 46% 19%;
+    --gospel-soft: 240 4% 16%;
+    --gospel-dove: 240 6% 8%;
+
+    /* Dark gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--gospel-primary)), hsl(var(--primary-glow)));
+    --gradient-soft: linear-gradient(180deg, hsl(var(--gospel-dove)), hsl(var(--gospel-soft)));
+    --gradient-hero: linear-gradient(135deg, hsl(266 85% 68% / 0.9), hsl(317 50% 24% / 0.8));
+
+    --sidebar-background: 240 10% 4%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 266 85% 68%;
+    --sidebar-primary-foreground: 240 10% 4%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 266 85% 68%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-soft {
+    background: var(--gradient-soft);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+}
