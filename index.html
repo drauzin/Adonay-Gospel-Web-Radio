@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Adonay Gospel - Música Gospel Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+
+  #chat-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: hsl(295, 82%, 28%);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 18px;
+    cursor: pointer;
+    z-index: 1100;
+    font-weight: bold;
+  }
+
+  #chat-container {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width: 400px;
+    max-height: 500px;
+    background: #ffffffee;
+    border: 2px solid #0056b3;
+    border-radius: 10px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    z-index: 1000;
+  }
+
+  #chat-container.show { display: flex; }
+
+  #messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background: #f2f2f2;
+    font-size: 13px;
+  }
+
+  .message {
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+
+  .message.user {
+    background: #dcf8c6;
+    align-self: flex-end;
+  }
+
+  .message.visitor {
+    background: #fff;
+    align-self: flex-start;
+  }
+
+  .message .username {
+    font-weight: bold;
+    margin-bottom: 2px;
+    font-size: 11px;
+    color: #003366;
+  }
+
+  .message .text { margin-bottom: 2px; }
+  .message .timestamp { font-size: 9px; color: #555; text-align: right; }
+
+  #chat-inputs {
+    display: none;
+    flex-direction: column;
+    border-top: 1px solid #ccc;
+    padding: 5px;
+    background: #ffffff;
+  }
+
+  #chat-inputs input[type="text"] {
+    padding: 6px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 2px 0;
+    outline: none;
+  }
+
+  #chat-inputs button {
+    padding: 6px;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-top: 3px;
+  }
+
+  #chat-inputs button:hover { background-color: #003366; }
+
+  @media (max-width: 480px) {
+    #chat-container { width: 90%; right: 5%; bottom: 70px; max-height: 60%; }
+  }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+<script type="module" src="/src/main.tsx"></script>
+
+<button id="chat-toggle">Chat</button>
+
+<div id="chat-container">
+  <div id="messages"></div>
+
+  <div id="chat-inputs">
+    <input type="text" id="message" placeholder="Digite sua mensagem..." />
+    <button id="sendBtn">Enviar</button>
+  </div>
+
+  <p id="login-prompt" style="text-align:center;font-size:12px;margin:3px 0;color:#555;">
+    Faça login para enviar mensagens.
+  </p>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabaseUrl = 'https://wbhrljyegtuxcrriaqis.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaHJsanllZ3R1eGNycmlhcWlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwMzU5NzYsImV4cCI6MjA3MDYxMTk3Nn0.V5v66K84usz0DFucKHW7NjptTtlEalCXaowNtsHAiYw';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const messagesDiv = document.getElementById('messages');
+const sendBtn = document.getElementById('sendBtn');
+const messageInput = document.getElementById('message');
+const chatToggle = document.getElementById('chat-toggle');
+const chatContainer = document.getElementById('chat-container');
+const chatInputs = document.getElementById('chat-inputs');
+const loginPrompt = document.getElementById('login-prompt');
+
+let currentUser = null;
+
+chatToggle.addEventListener('click', () => chatContainer.classList.toggle('show'));
+
+// Sessão Supabase
+supabase.auth.getSession().then(({ data }) => {
+  currentUser = data.session?.user || null;
+  updateUI();
+});
+supabase.auth.onAuthStateChange((_event, session) => {
+  currentUser = session?.user || null;
+  updateUI();
+});
+
+function updateUI() {
+  if(currentUser){
+    chatInputs.style.display = 'flex';
+    loginPrompt.style.display = 'none';
+  } else {
+    chatInputs.style.display = 'none';
+    loginPrompt.style.display = 'block';
+  }
+}
+
+function formatTime(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function appendMessage(username, text, inserted_at) {
+  const messageDiv = document.createElement('div');
+  messageDiv.classList.add('message');
+  messageDiv.classList.add(username === currentUser?.email ? 'user' : 'visitor');
+  messageDiv.innerHTML = `
+    <div class="username">${username}</div>
+    <div class="text">${text}</div>
+    <div class="timestamp">${formatTime(inserted_at)}</div>
+  `;
+  messagesDiv.appendChild(messageDiv);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+async function loadMessages() {
+  const { data, error } = await supabase
+    .from('messages')
+    .select('id, username, text, inserted_at')
+    .order('inserted_at', { ascending:true });
+  if(error) return console.error(error);
+  messagesDiv.innerHTML = '';
+  data.forEach(msg => appendMessage(msg.username, msg.text, msg.inserted_at));
+}
+
+sendBtn.addEventListener('click', async () => {
+  const text = messageInput.value.trim();
+  if(!text || !currentUser) return;
+
+  const { error } = await supabase.from('messages').insert([{ username: currentUser.email, text }]);
+  if(error) console.error(error);
+  messageInput.value = '';
+});
+
+supabase.channel('messages-channel')
+  .on('postgres_changes', { event:'INSERT', schema:'public', table:'messages' }, payload => {
+    const msg = payload.new;
+    appendMessage(msg.username, msg.text, msg.inserted_at);
+  }).subscribe();
+
+loadMessages();
+</script>
+
+</body>
+</html>
