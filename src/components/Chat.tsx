@@ -54,7 +54,9 @@ const Chat = () => {
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // Scroll automático

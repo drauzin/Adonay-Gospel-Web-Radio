@@ -6,90 +6,119 @@
   <title>Login / Registro - Adonay Gospel</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* Paleta de cores gospel suave */
+    :root {
+      --primary: #0056b3;   /* azul principal */
+      --secondary: #82c3f7; /* azul suave */
+      --background: #f5f9fc;
+      --white: #ffffff;
+      --error: #e74c3c;
+      --google: #DB4437;
+      --google-hover: #A33329;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: #f0f4f8;
+      background: var(--background);
+      margin: 0;
     }
 
     .auth-container {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      background: var(--white);
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       width: 100%;
       max-width: 400px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .auth-container:hover {
+      transform: translateY(-5px);
     }
 
     h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      color: #0056b3;
+      margin-bottom: 2rem;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 1.8rem;
     }
 
     input {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 1rem;
-      border-radius: 5px;
+      padding: 12px 15px;
+      margin-bottom: 1.2rem;
+      border-radius: 12px;
       border: 1px solid #ccc;
       font-size: 14px;
+      transition: border 0.3s;
+    }
+
+    input:focus {
+      border-color: var(--secondary);
+      outline: none;
     }
 
     button {
       width: 100%;
-      padding: 10px;
-      background: #0056b3;
-      color: #fff;
+      padding: 12px;
+      background: var(--primary);
+      color: var(--white);
       border: none;
       font-size: 16px;
-      font-weight: bold;
-      border-radius: 5px;
+      font-weight: 600;
+      border-radius: 12px;
       cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      margin-bottom: 0.8rem;
     }
 
     button:hover {
-      background: #003366;
-    }
-
-    .switch-auth {
-      text-align: center;
-      margin-top: 1rem;
-      font-size: 14px;
-    }
-
-    .switch-auth span {
-      color: #0056b3;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    .error-msg {
-      color: red;
-      margin-bottom: 1rem;
-      text-align: center;
-      font-size: 14px;
+      background: var(--secondary);
+      transform: translateY(-2px);
     }
 
     .google-btn {
-      background: #DB4437;
+      background: var(--google);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      margin-top: 0.5rem;
+      gap: 10px;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      transition: background 0.3s, transform 0.2s;
     }
 
     .google-btn:hover {
-      background: #A33329;
+      background: var(--google-hover);
+      transform: translateY(-2px);
     }
 
     .google-btn img {
       width: 20px;
       height: 20px;
+    }
+
+    .switch-auth {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .switch-auth span {
+      color: var(--primary);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .error-msg {
+      color: var(--error);
+      margin-bottom: 1rem;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -126,13 +155,12 @@
     const errorMsg = document.getElementById('error-msg');
     const googleBtn = document.getElementById('google-btn');
 
-    let isLogin = true; // true = login, false = registro
+    let isLogin = true;
 
     const redirectDashboard = () => {
-      window.location.href = "/dashboard.html";
+      window.location.href = "/";
     }
 
-    // Checa se já está logado
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) redirectDashboard();
     });
@@ -140,31 +168,19 @@
     submitBtn.addEventListener('click', async () => {
       const email = emailInput.value;
       const password = passwordInput.value;
-
-      if (!email || !password) {
-        errorMsg.textContent = "Preencha todos os campos!";
-        return;
-      }
-
+      if (!email || !password) { errorMsg.textContent = "Preencha todos os campos!"; return; }
       errorMsg.textContent = "";
-
       if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          errorMsg.textContent = error.message;
-        } else {
-          redirectDashboard();
-        }
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) errorMsg.textContent = error.message;
+        else redirectDashboard();
       } else {
-        const { data, error } = await supabase.auth.signUp(
+        const { error } = await supabase.auth.signUp(
           { email, password },
           { emailRedirectTo: window.location.origin + "/dashboard.html" }
         );
-        if (error) {
-          errorMsg.textContent = error.message;
-        } else {
-          redirectDashboard(); // entra automaticamente
-        }
+        if (error) errorMsg.textContent = error.message;
+        else redirectDashboard();
       }
     });
 
@@ -178,11 +194,10 @@
       passwordInput.value = "";
     });
 
-    // Login com Google
     googleBtn.addEventListener('click', async () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: window.location.origin + "/dashboard.html" }
+        options: { redirectTo: window.location.origin + "/" }
       });
       if (error) errorMsg.textContent = error.message;
     });
