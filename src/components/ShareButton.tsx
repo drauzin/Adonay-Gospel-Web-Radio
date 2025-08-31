@@ -12,21 +12,28 @@ const ShareButton = () => {
       url: window.location.href,
     };
 
-    // Tenta Web Share API (mobile)
+    console.log("🔍 Iniciando handleShare...");
+    console.log("🌐 Dados do share:", shareData);
+
+    // Verifica suporte da API de compartilhamento
     if (navigator.share) {
+      console.log("✅ navigator.share disponível. Tentando compartilhar...");
       try {
         await navigator.share(shareData);
+        console.log("🎉 Compartilhamento concluído com sucesso!");
       } catch (err) {
-        console.error("Erro ao compartilhar:", err);
+        console.error("❌ Erro ao compartilhar:", err);
       }
     } else {
+      console.log("⚠️ navigator.share NÃO suportado. Tentando copiar link...");
       // Fallback: copia o link no desktop
       try {
         await navigator.clipboard.writeText(window.location.href);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000); // Volta ao normal após 2s
+        setTimeout(() => setCopied(false), 2000);
+        console.log("📋 Link copiado com sucesso!");
       } catch (err) {
-        console.error("Erro ao copiar link:", err);
+        console.error("❌ Erro ao copiar link:", err);
       }
     }
   };
@@ -47,7 +54,7 @@ const ShareButton = () => {
         </span>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeUp {
           0% { opacity: 0; transform: translateY(10px); }
           50% { opacity: 1; transform: translateY(-5px); }

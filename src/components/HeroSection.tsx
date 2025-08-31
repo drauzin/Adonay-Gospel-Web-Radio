@@ -28,6 +28,26 @@ const HeroSection = () => {
     document.getElementById("radio-stations")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Função de compartilhar
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "Adonay Gospel",
+          text: "Louvor e Adoração 24h 🎶🙌",
+          url: window.location.href,
+        });
+        console.log("✅ Conteúdo compartilhado com sucesso!");
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert("🔗 Link copiado para a área de transferência!");
+        console.log("Fallback: link copiado para área de transferência.");
+      }
+    } catch (error) {
+      console.error("Erro ao compartilhar:", error);
+    }
+  };
+
   return (
     <section className="relative min-h-[70vh] flex items-center justify-center gradient-soft">
       
@@ -86,7 +106,7 @@ const HeroSection = () => {
                   )}
                 </Button>
                 
-                <Button variant="soft" size="sm">
+                <Button variant="soft" size="sm" onClick={handleShare}>
                   <Share2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -111,10 +131,10 @@ const HeroSection = () => {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="hero" size="xl" onClick={() => {
-  document.getElementById("radio-stations")?.scrollIntoView({ behavior: "smooth" });
-}}>
-  Ouvir ao Vivo
-</Button>
+              document.getElementById("radio-stations")?.scrollIntoView({ behavior: "smooth" });
+            }}>
+              Ouvir ao Vivo
+            </Button>
 
             <Button variant="soft" size="xl" onClick={scrollToStations}>
               Ver Programação
