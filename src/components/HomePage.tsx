@@ -1,6 +1,6 @@
 import Chat from '../components/Chat';
 import HeroSection from './HeroSection'
-import RadioStationsSection from './RadioStationsSection'
+import RadioStationsSection from './VersiculosSection'
 
 
 const HomePage = () => {
