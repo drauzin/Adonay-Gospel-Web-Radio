@@ -73,6 +73,24 @@
       text-align: center;
       font-size: 14px;
     }
+
+    .google-btn {
+      background: #DB4437;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 0.5rem;
+    }
+
+    .google-btn:hover {
+      background: #A33329;
+    }
+
+    .google-btn img {
+      width: 20px;
+      height: 20px;
+    }
   </style>
 </head>
 <body>
@@ -82,6 +100,12 @@
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Senha" />
     <button id="submit-btn">Entrar</button>
+
+    <button id="google-btn" class="google-btn">
+      <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" />
+      Entrar com Google
+    </button>
+
     <div class="switch-auth">
       <span id="switch-auth">Não tem conta? Registre-se</span>
     </div>
@@ -91,7 +115,7 @@
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
     const supabaseUrl = 'https://wbhrljyegtuxcrriaqis.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaHJsanllZ3R1eGNycmlhcWlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwMzU5NzYsImV4cCI6MjA3MDYxMTk3Nn0.V5v66K84usz0DFucKHW7NjptTtlEalCXaowNtsHAiYw'; // coloque sua anon key aqui
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndiaHJsanllZ3R1eGNycmlhcWlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwMzU5NzYsImV4cCI6MjA3MDYxMTk3Nn0.V5v66K84usz0DFucKHW7NjptTtlEalCXaowNtsHAiYw';
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const emailInput = document.getElementById('email');
@@ -100,6 +124,7 @@
     const formTitle = document.getElementById('form-title');
     const switchAuth = document.getElementById('switch-auth');
     const errorMsg = document.getElementById('error-msg');
+    const googleBtn = document.getElementById('google-btn');
 
     let isLogin = true; // true = login, false = registro
 
@@ -131,15 +156,14 @@
           redirectDashboard();
         }
       } else {
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp(
+          { email, password },
+          { emailRedirectTo: window.location.origin + "/dashboard.html" }
+        );
         if (error) {
           errorMsg.textContent = error.message;
         } else {
-          alert("Registro realizado! Verifique seu email para confirmar a conta.");
-          isLogin = true;
-          formTitle.textContent = "Login";
-          submitBtn.textContent = "Entrar";
-          switchAuth.textContent = "Não tem conta? Registre-se";
+          redirectDashboard(); // entra automaticamente
         }
       }
     });
@@ -152,6 +176,15 @@
       errorMsg.textContent = "";
       emailInput.value = "";
       passwordInput.value = "";
+    });
+
+    // Login com Google
+    googleBtn.addEventListener('click', async () => {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: window.location.origin + "/dashboard.html" }
+      });
+      if (error) errorMsg.textContent = error.message;
     });
   </script>
 </body>
