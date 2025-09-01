@@ -27,9 +27,7 @@ const Chat = () => {
       setUser(session?.user ?? null);
     });
 
-    return () => {
-      listener.subscription.unsubscribe();
-    };
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   // Carregar mensagens e realtime
@@ -49,7 +47,10 @@ const Chat = () => {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "messages" },
         (payload) => {
-          if (payload.new) setMessages((prev) => [...prev, payload.new as Message]);
+          if (payload.new) {
+            setMessages((prev) => [...prev, payload.new as Message]);
+            // Fade effect será ativado via CSS
+          }
         }
       )
       .subscribe();
@@ -72,18 +73,23 @@ const Chat = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 w-96 max-h-96 bg-white border p-2 flex flex-col shadow-lg rounded-lg">
-      <div className="flex-1 overflow-y-auto mb-2">
+    <div className="fixed bottom-4 right-4 w-96 max-h-[400px] flex flex-col bg-[hsl(var(--gospel-dove))]/80 backdrop-blur-md border border-[hsl(var(--border))] rounded-3xl shadow-glow p-3">
+      
+      <div className="flex-1 overflow-y-auto mb-3 space-y-2 scrollbar-thin scrollbar-thumb-[hsl(var(--primary))]/40 scrollbar-track-[hsl(var(--gospel-dove))]/20">
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`p-2 mb-1 rounded ${
-              msg.username === user?.email ? "bg-blue-200 self-end" : "bg-gray-200 self-start"
-            }`}
+            className={`p-2 rounded-xl max-w-[80%] break-words transition-all duration-500 ease-out opacity-0 animate-fade-in
+              ${msg.username === user?.email
+                ? "bg-[hsl(var(--gospel-primary)/0.3)] self-end text-[hsl(var(--primary-foreground))]"
+                : "bg-[hsl(var(--gospel-soft))] self-start text-[hsl(var(--foreground))]"
+              }`}
           >
-            <strong>{msg.username}</strong>
-            <p>{msg.text}</p>
-            <span className="text-xs">{new Date(msg.inserted_at).toLocaleTimeString()}</span>
+            <strong className="block text-sm">{msg.username}</strong>
+            <p className="text-base">{msg.text}</p>
+            <span className="text-xs text-gray-500 mt-1 block">
+              {new Date(msg.inserted_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            </span>
           </div>
         ))}
         <div ref={messagesEndRef} />
@@ -93,18 +99,22 @@ const Chat = () => {
         <div className="flex gap-2">
           <input
             type="text"
-            className="border p-1 flex-1 rounded"
+            className="flex-1 p-2 rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] placeholder:text-gray-400 focus:ring-2 focus:ring-[hsl(var(--primary))] outline-none transition-all-smooth"
             placeholder="Digite sua mensagem..."
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
-          <button className="p-1 rounded bg-blue-600 text-white" onClick={sendMessage}>
+          <button
+            className="px-4 py-2 rounded-xl bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary-glow))] transition-all-smooth"
+            onClick={sendMessage}
+          >
             Enviar
           </button>
         </div>
       ) : (
         <p className="text-center text-gray-500 text-sm mt-1">
-          <a href="/login.html" className="text-blue-600 underline">
+          <a href="/login.html" className="text-[hsl(var(--primary))] underline">
             Faça login
           </a>{" "}
           para enviar mensagens.
