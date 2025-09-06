@@ -1,14 +1,23 @@
-import Chat from '../components/Chat';
-import HeroSection from './HeroSection'
-import RadioStationsSection from './VersiculosSection'
-
+import HeroSection from "./HeroSection";
+import BibleVerseSection from "./VersiculosSection";
+import ProgramsSection from "./ProgramsSection"; // se você tiver essa seção
+import { RadioProvider } from "@/contexts/RadioContext"; // necessário para HeroSection
 
 const HomePage = () => {
   return (
-    <div className="bg-gospel-background min-h-screen">
-      <HeroSection />
-      <RadioStationsSection />
-      <Chat />  {/* Aqui */}
-    </div>
+    <RadioProvider>
+      <div className="flex flex-col">
+        {/* Hero principal com rádio */}
+        <HeroSection />
+
+        {/* Seção de versículo do dia */}
+        <BibleVerseSection />
+
+        {/* Seção de programação */}
+        <ProgramsSection />
+      </div>
+    </RadioProvider>
   );
 };
+
+export default HomePage;
