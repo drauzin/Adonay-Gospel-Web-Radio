@@ -4,9 +4,18 @@ import { useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import html2canvas from "html2canvas";
 
-interface Verse { text: string; reference: string; }
+interface Verse {
+  text: string;
+  reference: string;
+}
 
-const versesList = ["João 3:16","Salmos 23:1","Filipenses 4:13","Romanos 8:28","Provérbios 3:5"];
+const versesList = [
+  "João 3:16",
+  "Salmos 23:1",
+  "Filipenses 4:13",
+  "Romanos 8:28",
+  "Provérbios 3:5",
+];
 
 const BibleVerseSection = () => {
   const [verse, setVerse] = useState<Verse>({ text: "", reference: "" });
@@ -18,22 +27,33 @@ const BibleVerseSection = () => {
   const fetchVerse = async (verseRefStr: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://bible-api.com/${verseRefStr}?translation=almeida`);
+      const response = await fetch(
+        `https://bible-api.com/${verseRefStr}?translation=almeida`
+      );
       const data = await response.json();
       setVerse({ text: data.text, reference: data.reference });
     } catch {
-      setVerse({ text: "Não foi possível carregar o versículo.", reference: "" });
+      setVerse({
+        text: "Não foi possível carregar o versículo.",
+        reference: "",
+      });
     }
     setLoading(false);
   };
 
-  useEffect(() => { fetchVerse(versesList[index]); }, [index]);
+  useEffect(() => {
+    fetchVerse(versesList[index]);
+  }, [index]);
   const handleNext = () => setIndex((prev) => (prev + 1) % versesList.length);
-  const handlePrev = () => setIndex((prev) => (prev - 1 + versesList.length) % versesList.length);
+  const handlePrev = () =>
+    setIndex((prev) => (prev - 1 + versesList.length) % versesList.length);
 
   const handleCreateImage = async () => {
     if (!verseRef.current) return;
-    const canvas = await html2canvas(verseRef.current, { scale: 2, backgroundColor: null });
+    const canvas = await html2canvas(verseRef.current, {
+      scale: 2,
+      backgroundColor: null,
+    });
     setImageURL(canvas.toDataURL("image/png"));
   };
 
@@ -48,7 +68,6 @@ const BibleVerseSection = () => {
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4 text-center flex flex-col items-center gap-6">
-
         {/* Título */}
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-blue-100 p-3 rounded-xl shadow-md">
@@ -71,8 +90,12 @@ const BibleVerseSection = () => {
             </div>
           ) : (
             <>
-              <p className="text-xl md:text-2xl font-serif text-gray-800 mb-2 leading-relaxed">"{verse.text}"</p>
-              <p className="text-blue-700 font-semibold mb-2">{verse.reference}</p>
+              <p className="text-xl md:text-2xl font-serif text-gray-800 mb-2 leading-relaxed">
+                "{verse.text}"
+              </p>
+              <p className="text-blue-700 font-semibold mb-2">
+                {verse.reference}
+              </p>
             </>
           )}
         </Card>
@@ -83,14 +106,16 @@ const BibleVerseSection = () => {
             onClick={handlePrev}
             className="flex items-center gap-2 bg-blue-50 text-blue-700 hover:bg-blue-100 shadow-md transition-all"
           >
-            <ChevronLeft className="h-4 w-4"/>Anterior
+            <ChevronLeft className="h-4 w-4" />
+            Anterior
           </Button>
 
           <Button
             onClick={handleNext}
             className="flex items-center gap-2 bg-blue-50 text-blue-700 hover:bg-blue-100 shadow-md transition-all"
           >
-            Próximo<ChevronRight className="h-4 w-4"/>
+            Próximo
+            <ChevronRight className="h-4 w-4" />
           </Button>
 
           <Button
@@ -110,10 +135,16 @@ const BibleVerseSection = () => {
               onClick={() => setImageURL(null)}
               className="absolute top-4 right-4 text-gray-700 hover:text-gray-900"
             >
-              <X className="h-5 w-5"/>
+              <X className="h-5 w-5" />
             </button>
-            <h3 className="text-xl font-semibold text-blue-800">Versículo em imagem</h3>
-            <img src={imageURL} alt="Versículo" className="rounded-xl shadow-lg w-full" />
+            <h3 className="text-xl font-semibold text-blue-800">
+              Versículo em imagem
+            </h3>
+            <img
+              src={imageURL}
+              alt="Versículo"
+              className="rounded-xl shadow-lg w-full"
+            />
             <div className="flex gap-3 mt-2">
               <Button
                 onClick={handleDownloadImage}

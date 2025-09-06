@@ -5,7 +5,15 @@ import { useRadio } from "@/contexts/RadioContext";
 import heroImage from "../assets/hero-radio.jpg";
 
 const HeroSection = () => {
-  const { currentRadio, isPlaying, isLoading, volume, playRadio, pauseRadio, setVolume } = useRadio();
+  const {
+    currentRadio,
+    isPlaying,
+    isLoading,
+    volume,
+    playRadio,
+    pauseRadio,
+    setVolume,
+  } = useRadio();
 
   const togglePlay = async () => {
     if (!currentRadio) return;
@@ -40,13 +48,13 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-[70vh] flex items-center justify-center bg-white">
       {/* Background Image com aura suave */}
-      <div 
+      <div
         className="absolute inset-0 opacity-10"
         style={{
           backgroundImage: `url(${heroImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       />
 
@@ -57,29 +65,33 @@ const HeroSection = () => {
             Louvor e Adoração 24h
           </h1>
           <p className="text-xl text-blue-700 mb-8 max-w-2xl mx-auto">
-            As melhores músicas gospel 24 horas por dia. 
-            Edificação, louvor e palavra para toda a família cristã.
+            As melhores músicas gospel 24 horas por dia. Edificação, louvor e
+            palavra para toda a família cristã.
           </p>
 
           {/* Radio Player Card */}
           <Card className="max-w-md mx-auto mb-8 shadow-md hover:shadow-lg bg-white border border-blue-100 rounded-2xl">
             <CardContent className="p-6">
               <div className="text-center mb-4">
-                <p className="text-sm text-blue-600 mb-1">Tocando agora</p>
+                <p className="text-sm stext-blue-600 mb-1">Tocando agora</p>
                 <h3 className="font-semibold text-blue-800">
-                  {currentRadio?.name || 'Radio 1'}
+                  {currentRadio?.name || "Radio 1"}
                 </h3>
                 <p className="text-sm text-blue-700">Gospel Hits</p>
               </div>
 
               {/* Controles de reprodução */}
               <div className="flex items-center justify-center gap-4 mb-4">
-                <Button variant="soft" size="sm" className="bg-blue-50 text-blue-700 hover:bg-blue-100">
+                <Button
+                  variant="soft"
+                  size="sm"
+                  className="1bg-blue-50 text-blue-700 hover:bg-blue-100"
+                >
                   <Heart className="h-4 w-4" />
                 </Button>
-                
-                <Button 
-                  variant="soft" 
+
+                <Button
+                  variant="soft"
                   size="icon"
                   onClick={togglePlay}
                   disabled={isLoading}
@@ -93,8 +105,13 @@ const HeroSection = () => {
                     <Play className="h-6 w-6 ml-1" />
                   )}
                 </Button>
-                
-                <Button variant="soft" size="sm" onClick={handleShare} className="bg-blue-50 text-blue-800 hover:bg-blue-100">
+
+                <Button
+                  variant="soft"
+                  size="sm"
+                  onClick={handleShare}
+                  className="bg-blue-50 text-blue-800 hover:bg-blue-100"
+                >
                   <Share2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -102,16 +119,18 @@ const HeroSection = () => {
               {/* Controle de volume */}
               <div className="flex items-center gap-3">
                 <Volume2 className="h-4 w-4 text-blue-700" />
-                <div 
+                <div
                   className="flex-1 bg-blue-100 rounded-full h-2 relative cursor-pointer"
                   onClick={handleVolumeChange}
                 >
-                  <div 
+                  <div
                     className="bg-gradient-to-r from-blue-300 to-blue-500 h-full rounded-full transition-all duration-300"
                     style={{ width: `${volume}%` }}
                   />
                 </div>
-                <span className="text-sm text-blue-700 min-w-[3ch]">{volume}</span>
+                <span className="text-sm text-blue-700 min-w-[3ch]">
+                  {volume}
+                </span>
               </div>
             </CardContent>
           </Card>
